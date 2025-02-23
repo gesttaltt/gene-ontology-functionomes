@@ -1,0 +1,20 @@
+# Virtual environment folder (dependencies are installed via requirements.txt)
+venv/
+
+# Python cache files and compiled bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Raw data file (downloaded at runtime)
+data/go/go-basic.json
+
+# If you want to ignore the entire data folder (uncomment the next line)
+# data/
+
+# Output folder (generated files)
+output/
+
+# IDE-specific files
+*.sublime-project
+*.sublime-workspace
