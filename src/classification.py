@@ -31,28 +31,57 @@ def load_processed_data(export_filename="processed_go.csv"):
 def compute_impact_index(data):
     """
     Calculates the 'functional impact index' for each gene in the dataset.
-    
+
     The index is defined as the sum of 'pathways' and 'interactions'.
     This function expects the DataFrame to be fully processed (i.e., by process_ontology.py)
     and to include the required columns.
-    
+
     Parameters:
         data (pandas.DataFrame): Processed DataFrame containing at least 'pathways'
                                  and 'interactions' columns.
-    
+
     Returns:
         pandas.DataFrame: DataFrame with an added column 'impact_index'.
-        
+
     Raises:
-        KeyError: If the required columns are not present.
+        TypeError: If data is not a DataFrame
+        KeyError: If the required columns are not present
+        ValueError: If data contains invalid values
     """
+    if not isinstance(data, pd.DataFrame):
+        raise TypeError(f"Expected pandas DataFrame, got {type(data).__name__}")
+
+    if data.empty:
+        raise ValueError("Cannot compute impact index on empty DataFrame")
+
     required_columns = ['pathways', 'interactions']
     for col in required_columns:
         if col not in data.columns:
             raise KeyError(f"Missing required column: {col}")
-    
-    data['impact_index'] = data['pathways'] + data['interactions']
-    return data
+
+    # Validate data types and values
+    if not pd.api.types.is_numeric_dtype(data['pathways']):
+        raise ValueError("Column 'pathways' must be numeric")
+    if not pd.api.types.is_numeric_dtype(data['interactions']):
+        raise ValueError("Column 'interactions' must be numeric")
+
+    # Check for NaN values
+    if data['pathways'].isna().any():
+        raise ValueError("Column 'pathways' contains NaN values")
+    if data['interactions'].isna().any():
+        raise ValueError("Column 'interactions' contains NaN values")
+
+    # Check for negative values
+    if (data['pathways'] < 0).any():
+        raise ValueError("Column 'pathways' contains negative values")
+    if (data['interactions'] < 0).any():
+        raise ValueError("Column 'interactions' contains negative values")
+
+    # Create a copy to avoid modifying input
+    result = data.copy()
+    result['impact_index'] = result['pathways'] + result['interactions']
+
+    return result
 
 def run_classification_pipeline():
     """
