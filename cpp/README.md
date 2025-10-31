@@ -199,6 +199,23 @@ auto result = graph.execute("double");
 
 ## Design Decisions
 
+### Why a Separate C++ Implementation?
+
+**This is intentionally a standalone implementation, NOT a replacement or merger with Spark.**
+
+The three pipeline implementations (C++, Spark, Python) serve different purposes:
+- **C++ DAG**: Local production workloads with minimal dependencies
+- **Spark**: Cloud-scale distributed processing
+- **Python**: Development and prototyping
+
+**Do NOT attempt to merge these implementations.** Each has different:
+- Execution models (single-machine vs distributed vs interpreted)
+- Dependencies (C++/pybind11 vs JVM/Scala vs pure Python)
+- Performance characteristics (low-latency vs high-throughput vs simplicity)
+- Operational requirements (compiled binary vs cluster vs script)
+
+Unifying them would create a bloated, complex abstraction that satisfies no use case well.
+
 ### Why Columnar Storage?
 - Gene functional data is naturally columnar (pathways, interactions, impact scores)
 - Analytics workloads benefit from column-oriented layout

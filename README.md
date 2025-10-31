@@ -121,6 +121,17 @@ databricks/            # Cloud deployment notebook
 
 (Spark version uses weighted formula with evidence quality tiers)
 
+## Design Philosophy: Intentional Separation
+
+**These three implementations are deliberately separate and should NOT be merged.**
+
+Each serves a distinct purpose with different trade-offs. Attempting to unify them would:
+- Create unnecessary abstraction layers and complexity
+- Force compromises that hurt each use case
+- Make the codebase harder to maintain and understand
+
+Instead, we maintain **clean separation** with shared data contracts (GO JSON → DataFrame schema).
+
 ## Choosing an Implementation
 
 **Use C++ DAG if:**
